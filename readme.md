@@ -15,7 +15,7 @@ Each entry has this structure:
   "sentence_en": "English translation(by LLM) as metadata from IdiomTranslate30",
   "embedding_text_zh": "Chinese text to embed for similarity search",
   "petci_id": "id in petci dataset",
-  "idiomtranslate30_index": "id in petci dataset"
+  "idiomtranslate30_index": "index in idiomtranslate30 dataset"
 }
 ```
 
