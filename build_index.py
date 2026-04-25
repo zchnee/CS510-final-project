@@ -110,34 +110,34 @@ def save_artifacts(index: faiss.Index, dataset: list, output_dir: str):
     print(f"Metadata saved at {metadata_path}")
 
 
-def run_quick_test(output_dir: str, model_name: str):
+# def run_quick_test(output_dir: str, model_name: str):
 
-    """
-     Sample test
-    """
+#     """
+#      Sample test
+#     """
 
-    index_path    = os.path.join(output_dir, INDEX_FILE)
-    metadata_path = os.path.join(output_dir, METADATA_FILE)
+#     index_path    = os.path.join(output_dir, INDEX_FILE)
+#     metadata_path = os.path.join(output_dir, METADATA_FILE)
 
-    index = faiss.read_index(index_path)
-    with open(metadata_path, "rb") as f:
-        dataset = pickle.load(f)
+#     index = faiss.read_index(index_path)
+#     with open(metadata_path, "rb") as f:
+#         dataset = pickle.load(f)
 
-    model = SentenceTransformer(model_name)
+#     model = SentenceTransformer(model_name)
 
-    # Test query — a Chinese sentence that should surface idioms about success/effort
-    test_query = "他们用威胁和利诱让我放弃了。"
-    print(f"Test query: \"{test_query}\"")
+#     # Test query — a Chinese sentence that should surface idioms about success/effort
+#     test_query = "他们用威胁和利诱让我放弃了。"
+#     print(f"Test query: \"{test_query}\"")
 
-    query_vector = model.encode([test_query]).astype(np.float32) # type: ignore
-    distances, indices = index.search(query_vector, k=3)
+#     query_vector = model.encode([test_query]).astype(np.float32) # type: ignore
+#     distances, indices = index.search(query_vector, k=3)
 
-    print(f"\nTop 3 matches:")
-    print(f"{'Rank':<6} {'Idiom':<15} {'Meaning':<40} {'Distance'}")
-    print(f"{'-'*75}")
-    for rank, (idx, dist) in enumerate(zip(indices[0],distances[0]), 1):
-        entry = dataset[idx]
-        print(f"{rank:<6} {entry['idiom_zh']:<15} {entry['meaning_en']:<40} {dist:.4f}")
+#     print(f"\nTop 3 matches:")
+#     print(f"{'Rank':<6} {'Idiom':<15} {'Meaning':<40} {'Distance'}")
+#     print(f"{'-'*75}")
+#     for rank, (idx, dist) in enumerate(zip(indices[0],distances[0]), 1):
+#         entry = dataset[idx]
+#         print(f"{rank:<6} {entry['idiom_zh']:<15} {entry['meaning_en']:<40} {dist:.4f}")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Build FAISS index")
@@ -156,5 +156,5 @@ if __name__ == "__main__":
     index = build_faiss_index(embeddings)
     save_artifacts(index, dataset,args.output)
 
-    if not args.skip_test:
-        run_quick_test(args.output, args.model)
+    # if not args.skip_test:
+    #     run_quick_test(args.output, args.model)
