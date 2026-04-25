@@ -4,3 +4,5 @@ __pycache__/
 .venv-wsl/
 .env
 .DS_Store
+data/idioms.index
+data/idioms_metadata.pkl
