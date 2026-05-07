@@ -14,7 +14,19 @@ export interface DetectResponse {
   idioms: IdiomMatch[]
 }
 
+export interface TranslateResponse {
+  text: string
+}
+
 export async function detectIdioms(text: string): Promise<DetectResponse> {
   const res = await axios.post<DetectResponse>('/api/detect', { text })
+  return res.data
+}
+
+export async function translateText(text: string): Promise<TranslateResponse> {
+  const res = await axios.post<TranslateResponse>('/api/translate', {
+    text,
+    to: 'en',
+  })
   return res.data
 }
