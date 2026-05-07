@@ -1,6 +1,6 @@
-# CS510 Final Project — Chinese–English Idiom-Aware Translation System
+# CS510 Final Project — Idiom-Aware Chinese–English Translator
 
-A web app for Chinese–English translation with a specialized focus on idiomatic expressions (成语). It detects Chinese idioms in input text and returns their English meanings, alternative translations, and example sentences using FAISS-based semantic retrieval.
+A full-stack Chinese-to-English translation app with an idiom-aware explanation layer for Chinese idiomatic expressions (成语). The system translates user input, detects idioms in the original Chinese text, and presents enriched metadata such as English meanings, alternative translations, and example sentence pairs. The backend combines FastAPI, dictionary-based idiom span detection, FAISS-backed metadata generation, and a Node bridge to `@vitalets/google-translate-api`; the frontend provides an interactive React interface for translation output, highlighted idioms, and explanation cards.
 
 ---
 
@@ -12,11 +12,14 @@ CS510-final-project/
 ├── build_index.py          # One-time FAISS index builder
 ├── detect_idioms.py        # Sliding-window idiom detection
 ├── get_data.py             # Dataset alignment script (PETCI + IdiomTranslate30)
+├── requirements.txt        # Python dependencies
 ├── data/
 │   ├── chinese_english_idiom_examples.json  # Aligned idiom dataset
 │   ├── idioms.index                         # FAISS index (generated)
 │   └── idioms_metadata.pkl                  # Metadata pickle (generated)
 └── frontend/               # React + TypeScript frontend (Vite)
+    └── scripts/
+        └── translate.mjs    # Node bridge for Google Translate API
 ```
 
 ---
@@ -25,7 +28,8 @@ CS510-final-project/
 
 - Python 3.11+
 - Node.js 18+
-- pip packages: `fastapi`, `uvicorn`, `sentence-transformers`, `faiss-cpu`, `datasets`
+- pip packages: installed from `requirements.txt`
+- npm packages: installed from `frontend/package.json`, including `@vitalets/google-translate-api`
 
 ---
 
@@ -34,7 +38,7 @@ CS510-final-project/
 ### 1. Install Python dependencies
 
 ```bash
-pip install fastapi uvicorn sentence-transformers faiss-cpu datasets
+pip install -r requirements.txt
 ```
 
 ### 2. Build the FAISS index
@@ -65,6 +69,12 @@ The app will be available at `http://localhost:5173`.
 
 > The frontend proxies `/api/*` requests to the backend at `http://localhost:8000`, so both must be running at the same time.
 
+You can test the translation bridge directly:
+
+```bash
+echo '{"text":"你好，世界","to":"en"}' | node frontend/scripts/translate.mjs
+```
+
 ---
 
 ## API
@@ -92,6 +102,22 @@ Detects Chinese idioms in input text and returns enriched metadata for each matc
       "sentence_en": "He truly achieved immediate success, getting promoted right after joining."
     }
   ]
+}
+```
+
+### `POST /translate`
+
+Translates Chinese text to English using `@vitalets/google-translate-api` through the Node bridge at `frontend/scripts/translate.mjs`.
+
+**Request body:**
+```json
+{ "text": "你好，世界", "to": "en" }
+```
+
+**Response:**
+```json
+{
+  "text": "Hello world"
 }
 ```
 
@@ -130,4 +156,3 @@ The aligned dataset is at `data/chinese_english_idiom_examples.json`. Each entry
 | Andrew Chen | andrew45 | Translation API integration |
 
 Project Coordinator: Andrew Chen (andrew45)
-

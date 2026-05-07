@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { detectIdioms, type IdiomMatch } from './api/client'
+import { detectIdioms, translateText, type IdiomMatch } from './api/client'
 import InputPanel from './components/InputPanel'
 import IdiomHighlighter from './components/IdiomHighlighter'
 import IdiomCard from './components/IdiomCard'
@@ -8,6 +8,7 @@ import TranslationOutput from './components/TranslationOutput'
 
 function App() {
   const [text, setText] = useState('')
+  const [translation, setTranslation] = useState('')
   const [idioms, setIdioms] = useState<IdiomMatch[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -18,8 +19,13 @@ function App() {
     setLoading(true)
     setError(null)
     try {
-      const result = await detectIdioms(text)
-      setIdioms(result.idioms)
+      const [detectResult, translateResult] = await Promise.all([
+        detectIdioms(text),
+        translateText(text),
+      ])
+
+      setIdioms(detectResult.idioms)
+      setTranslation(translateResult.text)
       setHasSearched(true)
     } catch (e: unknown) {
       if (e instanceof Error) {
@@ -64,13 +70,13 @@ function App() {
           </div>
         )}
 
-        {/* Translation output (placeholder until Andrew's API is integrated) */}
+        {/* Translation output */}
         {hasSearched && (
           <section className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
               Translation
             </h2>
-            <TranslationOutput />
+            <TranslationOutput text={translation} />
           </section>
         )}
 

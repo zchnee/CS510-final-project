@@ -1,11 +1,11 @@
 interface Props {
-  placeholder?: string
+  text?: string
 }
 
-export default function TranslationOutput({ placeholder = 'Translation will appear here once the translation API is integrated.' }: Props) {
+export default function TranslationOutput({ text }: Props) {
   return (
-    <div className="w-full min-h-[80px] p-3 border border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-400 text-sm italic">
-      {placeholder}
+    <div className="w-full min-h-[80px] p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm whitespace-pre-wrap">
+      {text || 'Translation will appear here.'}
     </div>
   )
 }

@@ -8,6 +8,9 @@ Run with: python -m uvicorn app:app --reload
 
 import pickle
 import os
+import json
+import subprocess
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -55,9 +58,18 @@ class DetectRequest(BaseModel):
     text: str
 
 
+class TranslateRequest(BaseModel):
+    text: str
+    to: str = "en"
+    source: str = "auto"
+
+
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
+
+BASE_DIR = Path(__file__).resolve().parent
+TRANSLATE_SCRIPT_PATH = BASE_DIR / "frontend" / "scripts" / "translate.mjs"
 
 @app.get("/")
 def home():
@@ -85,3 +97,48 @@ def detect(req: DetectRequest):
         })
 
     return { "idioms": enriched }
+
+
+@app.post("/translate")
+def translate_text(req: TranslateRequest):
+    if not req.text.strip():
+        raise HTTPException(status_code=400, detail="text must not be empty")
+
+    if not TRANSLATE_SCRIPT_PATH.exists():
+        raise HTTPException(
+            status_code=500,
+            detail=f"Translation script not found at {TRANSLATE_SCRIPT_PATH}",
+        )
+
+    payload = {
+        "text": req.text,
+        "to": req.to,
+        "from": req.source,
+    }
+
+    try:
+        result = subprocess.run(
+            ["node", str(TRANSLATE_SCRIPT_PATH)],
+            input=json.dumps(payload),
+            text=True,
+            capture_output=True,
+            timeout=20,
+            check=True,
+        )
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=500,
+            detail="Node.js was not found. Install Node.js and make sure `node` is on PATH.",
+        )
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=504, detail="Translation request timed out")
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(
+            status_code=502,
+            detail=e.stderr.strip() or "Translation provider failed",
+        )
+
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=502, detail="Invalid translation response")
