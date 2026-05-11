@@ -20,7 +20,7 @@ export default function InputPanel({ value, onChange, onSubmit, loading }: Props
       <button
         onClick={onSubmit}
         disabled={loading || !value.trim()}
-        className="self-end px-6 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="self-end px-6 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
       >
         {loading ? 'Detecting…' : 'Detect Idioms'}
       </button>
