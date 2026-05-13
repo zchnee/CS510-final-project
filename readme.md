@@ -153,6 +153,6 @@ The aligned dataset is at `data/chinese_english_idiom_examples.json`. Each entry
 | Larry Liao | larryl3 | Frontend (React) |
 | Yixin Zhou | yixinz10 | Dataset, idiom extraction |
 | Abuzar Hussain Mohammad | ahm7 | FAISS index, backend server |
-| Andrew Chen | andrew45 | Translation API integration |
+| Andrew Chen | andrew45 | Evaluation methodology |
 
 Project Coordinator: Andrew Chen (andrew45)
